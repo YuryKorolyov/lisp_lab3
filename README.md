@@ -1,6 +1,6 @@
 <p align="center"><b>МОНУ НТУУ КПІ ім. Ігоря Сікорського ФПМ СПіСКС</b></p>
 <p align="center">
-<b>Звіт з лабораторної роботи 2</b><br/>
+<b>Звіт з лабораторної роботи 3</b><br/>
 "Рекурсія"<br/>
 дисципліни "Вступ до функціонального програмування"
 </p>
@@ -19,7 +19,7 @@
 1. Написати функцію `remove-thirds`, яка видаляє зі списку кожен третій елемент.
 2. Написати функцію `list-set-union-3`, яка визначає об'єднання трьох множин, заданих списками атомів.
 
-## Лістинг функції remove-thirds
+## Лістинг програми
 ```lisp
 ;; Допоміжна функція для пошуку мінімального елемента
 (defun get-min (lst)
@@ -97,3 +97,22 @@
   (check-first-function "test 3" '(1 1 1 1 1) '(1 1 1 1 1))
   (check-first-function "test 4" '(2 2 3 3 1) '(1 2 2 3 3))
   (check-first-function "test 5" nil nil))
+```
+## Результати тестування
+```lisp
+CL-USER> (test-first-function)
+passed test 1
+passed test 2
+passed test 3
+passed test 4
+passed test 5
+NIL
+CL-USER> (test-second-function)
+passed test 1
+passed test 2
+passed test 3
+passed test 4
+passed test 5
+NIL
+CL-USER
+```
