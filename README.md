@@ -1,1 +1,99 @@
-# lisp_lab3
+<p align="center"><b>МОНУ НТУУ КПІ ім. Ігоря Сікорського ФПМ СПіСКС</b></p>
+<p align="center">
+<b>Звіт з лабораторної роботи 2</b><br/>
+"Рекурсія"<br/>
+дисципліни "Вступ до функціонального програмування"
+</p>
+<p align="right"><b>Студент</b>:Корольов Юрій Ігорович, група КВ-23</p>
+<p align="right"><b>Рік</b>: 2025</p>
+
+## Загальне завдання
+Реалізуйте дві рекурсивні функції, що виконують деякі дії з вхідним(и) списком(-ами), за можливості/необхідності використовуючи різні види рекурсії. Вимоги до функцій:
+1. Зміна списку має відбуватись за рахунок конструювання нового списку, а не зміни наявного (вхідного).
+2. Не допускається використання функцій вищого порядку чи стандартних функцій для роботи зі списками, що не наведені в четвертому розділі навчального посібника.
+3. Реалізована функція не має бути функцією вищого порядку.
+4. Не допускається використання псевдофункцій (деструктивного підходу).
+5. Не допускається використання циклів.
+
+## Варіант 11 % 5 = 1. Алгоритм сортування вибором за незменшенням.
+1. Написати функцію `remove-thirds`, яка видаляє зі списку кожен третій елемент.
+2. Написати функцію `list-set-union-3`, яка визначає об'єднання трьох множин, заданих списками атомів.
+
+## Лістинг функції remove-thirds
+```lisp
+;; Допоміжна функція для пошуку мінімального елемента
+(defun get-min (lst)
+  (cond ((null (cdr lst)) (car lst)) ;; Якщо один елемент, він і є мінімум
+        (t (let ((min-rest (get-min (cdr lst))))
+             (if (<= (car lst) min-rest)
+                 (car lst)
+                 min-rest)))))
+
+;; Допоміжна функція для видалення першого входження елемента
+;; (потрібна, щоб передати решту списку далі)
+(defun remove-one (item lst)
+  (cond ((null lst) nil)
+        ((= item (car lst)) (cdr lst)) ;; Знайшли - пропускаємо (видаляємо) і повертаємо хвіст
+        (t (cons (car lst) (remove-one item (cdr lst)))))) ;; Інакше будуємо список далі
+
+;; Основна функція сортування вибором (функціональна)
+(defun selection-sort-func (lst)
+  (cond ((null lst) nil)
+        (t (let ((min-val (get-min lst)))
+             (cons min-val 
+                   (selection-sort-func (remove-one min-val lst)))))))
+
+;; --- ТЕСТИ ДЛЯ ФУНКЦІОНАЛЬНОГО ВАРІАНТУ ---
+
+(defun check-first-function (name input expected)
+  "Execute `selection-sort-func' on `input', compare result with `expected' and print status"
+  (format t "~:[FAILED~;passed~] ~a~%"
+          (equal (selection-sort-func input) expected)
+          name))
+
+;; Основна функція сортування вибором (імперативна)
+(defun selection-sort-imper (lst)
+  (let ((result (copy-list lst))    ;; Копіюємо список, щоб не змінювати оригінал
+        (len (length lst)))
+    
+    ;; Зовнішній цикл: i від 0 до length-2
+    (dotimes (i (1- len))
+      (let ((min-idx i))
+        
+        ;; Внутрішній цикл: j від i+1 до length-1
+        (do ((j (1+ i) (1+ j)))
+            ((= j len)) ;; Умова виходу
+          ;; Якщо поточний елемент менший за запам'ятований мінімум
+          (when (< (nth j result) (nth min-idx result))
+            (setf min-idx j)))
+        
+        ;; Обмін елементів (Swap), якщо знайшли новий мінімум
+        (when (/= min-idx i)
+          (let ((temp (nth i result)))
+            (setf (nth i result) (nth min-idx result))
+            (setf (nth min-idx result) temp)))))
+    
+    result))
+
+;; --- ТЕСТИ ДЛЯ ІМПЕРАТИВНОГО ВАРІАНТУ ---
+
+(defun check-second-function (name input expected)
+  "Execute `selection-sort-imper' on `input', compare result with `expected' and print status"
+  (format t "~:[FAILED~;passed~] ~a~%"
+          (equal (selection-sort-imper input) expected)
+          name))
+
+(defun test-second-function ()
+  (check-second-function "test 1" '(5 3 4 1 2) '(1 2 3 4 5))  
+  (check-second-function "test 2" '(1 2 3 4 5) '(1 2 3 4 5)) 
+  (check-second-function "test 3" '(1 1 1 1 1) '(1 1 1 1 1))
+  (check-second-function "test 4" '(2 2 3 3 1) '(1 2 2 3 3))
+  (check-second-function "test 5" nil nil))
+
+
+(defun test-first-function ()
+  (check-first-function "test 1" '(5 3 4 1 2) '(1 2 3 4 5))  
+  (check-first-function "test 2" '(1 2 3 4 5) '(1 2 3 4 5)) 
+  (check-first-function "test 3" '(1 1 1 1 1) '(1 1 1 1 1))
+  (check-first-function "test 4" '(2 2 3 3 1) '(1 2 2 3 3))
+  (check-first-function "test 5" nil nil))
